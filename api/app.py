@@ -153,6 +153,129 @@ def delete_groupe(nom):
     return "", 204  # no data
 
 
+""" ################## BILLETS ##################
+    #############################################"""
+    
+@app.route('/billets')
+def get_billets():
+    """récupère les billets"""
+    billets = execute_query("select * from billets")
+    for i in range(len(billets)):
+        billets[i]["_links"] = [{
+            "href": "/billets/" + billets[i]["prix"],
+            "rel": "self"
+        }, {
+            "href": "/billets/" + billets[i]["id"] + "/concerts",
+            "rel": "concerts"
+        },{
+            "href": "/billets/" + billets[i]["id"] + "/utilisateurs",
+            "rel": "utilisateurs"
+        }]
+    return jsonify(billets), 200
+
+@app.route('/billets/<int:id>')
+def get_billet(id):
+    """Récupère les infos d'un billet en envoyant une requete HTTP
+       Si le billet n'existe pas renvoi 404
+    """
+    billets = execute_query("select * from departements where id = ?", (id,))
+    if billets == []:
+        abort(404, "Ce billet n'existe pas")
+    billets[0]["_links"] = [{
+        "href": "/billets/" + billets[0]["id"] + "/concerts",
+        "rel": "concerts"
+    },{
+        "href": "/billets/" + billets[0]["id"] + "/utilisateurs",
+        "rel": "utilisateurs"
+    }
+    ]
+    return jsonify(billets), 200
+
+@app.route('/utilisateurs/<string:nom_utilisateur>/concerts/<string:id_concert>/billets', methods=['POST'])
+def post_billet(nom_utilisateur,id_concert):
+    """créé un billet"""
+    prix_billet = request.args.get("prix")
+    execute_query("insert into billets (concert_id, prix, utilisateur_id) values ((select id from concerts where id = ?), ?, (select id from utilisateurs where nom = ?))", (id_concert, prix_billet, nom_utilisateur))
+    # on renvoi le lien du billet  que l'on vient de créer
+    reponse_json = jsonify({
+        "_links": [{
+            "href": "/billets/" + prix_billet,
+            "rel": "self"
+        }]
+    })
+    return reponse_json, 201  # created
+
+@app.route('/billets/<id_billet>', methods=['DELETE'])
+def delete_billet(id_billet):
+    """supprimer un billet"""
+    execute_query("delete from billets where id=?", (id_billet, ))
+    return "", 204
+
+""" ################## CONCERTS ##################
+    #############################################"""
+
+@app.route('/groupes/<string:nom>/concerts')
+def get_concert_from_groupe(nom):
+    """Récupère les concerts d'un groupe"""
+    concerts = execute_query("""SELECT concerts.id, concerts.groupe_id, concerts.duree, concerts.date FROM concerts 
+                            JOIN groupes on concerts.groupe_id = groupes.id
+                            WHERE groupes.nom = ?""", (urllib.parse.unquote(nom),))
+    if concerts == []:
+        abort(404, "Aucuns concerts pour ce groupe")
+    else:
+        for i in range(len(concerts)):
+            concerts[i]["_links"] = [
+                {
+                    "href": "/concerts/" + str(concerts[i]["id"]),
+                    "rel": "self"
+                },
+                {
+                    "href": "/concerts/" + str(concerts[i]["id"]) + "/billets",
+                    "rel": "concerts"
+                }
+            ]
+    return jsonify(concerts), 200
+
+@app.route('/concerts')
+def get_concerts():
+    """récupère la liste des concerts"""
+    concerts = execute_query("SELECT id, groupe_id, duree, date FROM concerts")
+    # ajout de _links à chaque dico groupes
+    for i in range(len(concerts)):
+        concerts[i]["_links"] = [
+            {
+                "href": "/concerts/" + str(concerts[i]["id"]),
+                "rel": "self"
+            },
+            {
+                "href": "/concerts/" + str(concerts[i]["id"]) + "/billets",
+                "rel": "concerts"
+            }
+        ]
+    return jsonify(concerts), 200
+
+@app.route('/groupe/<string:nom_groupe>/concerts', methods=['POST'])
+def post_concert_from_groupe(nom_groupe):
+    """Ajoute un concert à un groupe"""
+    date = request.args.get("date")
+    duree = request.args.get("duree")
+    concert = execute_query("INSERT INTO concerts(date,duree,groupe_id) VALUES (?, ?, (SELECT id FROM groupes WHERE nom = ?))",(date,duree,nom_groupe))
+    # on renvoi le lien du concert que l'on vient de créer
+    reponse_json = jsonify({
+        "_links": [{
+            "href": "/groupe/" + urllib.parse.quote(nom_groupe) + "/concerts",
+            "rel": "self"
+        }]
+    })
+    return reponse_json, 201  # created
+
+@app.route('/concerts/<string:concert_id>', methods=['DELETE'])
+def delete_concert(concert_id):
+    """Supprimer un concert"""
+    execute_query("delete from concerts where id=?", (concert_id, ))
+    return "", 204  # no data   
+
+
 
 if __name__ == '__main__':
     # define the localhost ip and the port that is going to be used
