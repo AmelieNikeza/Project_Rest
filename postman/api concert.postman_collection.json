@@ -1,0 +1,261 @@
+{
+	"info": {
+		"_postman_id": "18f1d9d2-23f3-4d13-871d-a74721327604",
+		"name": "api concert",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24815497"
+	},
+	"item": [
+		{
+			"name": "groupes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contenu ok\", function (){\r",
+							"    pm.expect(pm.response.text()).to.include(\"Stromae\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/groupes",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"groupes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new groupe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/groupes?nom=C%20o%20u",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"groupes"
+					],
+					"query": [
+						{
+							"key": "nom",
+							"value": "C%20o%20u"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete groupe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/groupes/C%20o%20u",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"groupes",
+						"C%20o%20u"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "concerts from groupe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contenu ok\", function (){\r",
+							"    pm.expect(pm.response.text()).to.include(\"groupe_id\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/groupes/Stromae/concerts",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"groupes",
+						"Stromae",
+						"concerts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "concerts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Contenu ok\", function (){\r",
+							"    pm.expect(pm.response.text()).to.include(\"groupe_id\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/concerts",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"concerts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new concert for groupe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/groupe/stromae/concerts?date=2022-12-16&duree=2h",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"groupe",
+						"stromae",
+						"concerts"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2022-12-16"
+						},
+						{
+							"key": "duree",
+							"value": "2h"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete concert",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status test\", function (){\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/concerts/4",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"concerts",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

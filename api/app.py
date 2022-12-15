@@ -162,14 +162,8 @@ def get_billets():
     billets = execute_query("select * from billets")
     for i in range(len(billets)):
         billets[i]["_links"] = [{
-            "href": "/billets/" + billets[i]["prix"],
+            "href": "/billets/" + str(billets[i]["id"]),
             "rel": "self"
-        }, {
-            "href": "/billets/" + billets[i]["id"] + "/concerts",
-            "rel": "concerts"
-        },{
-            "href": "/billets/" + billets[i]["id"] + "/utilisateurs",
-            "rel": "utilisateurs"
         }]
     return jsonify(billets), 200
 
@@ -178,17 +172,13 @@ def get_billet(id):
     """Récupère les infos d'un billet en envoyant une requete HTTP
        Si le billet n'existe pas renvoi 404
     """
-    billets = execute_query("select * from departements where id = ?", (id,))
+    billets = execute_query("select * from billets where id = ?", (id,))
     if billets == []:
         abort(404, "Ce billet n'existe pas")
     billets[0]["_links"] = [{
-        "href": "/billets/" + billets[0]["id"] + "/concerts",
-        "rel": "concerts"
-    },{
-        "href": "/billets/" + billets[0]["id"] + "/utilisateurs",
-        "rel": "utilisateurs"
-    }
-    ]
+        "href": "/billets/" + str(billets[0]["id"]),
+        "rel": "self"
+    }]
     return jsonify(billets), 200
 
 @app.route('/utilisateurs/<string:nom_utilisateur>/concerts/<string:id_concert>/billets', methods=['POST'])
