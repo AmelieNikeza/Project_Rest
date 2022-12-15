@@ -35,6 +35,25 @@ def execute_query(query, data=()):
         conn.commit()
         return cur.lastrowid
 
+# we define the route /
+@app.route('/')
+def welcome():
+    liens = [{}]
+    liens[0]["_links"] = [{
+        "href": "/utilisateurs",
+        "rel": "utilisateurs"
+    }, {
+        "href": "/groupes",
+        "rel": "groupes"
+    },{
+        "href": "/concerts",
+        "rel": "concerts"
+    },{
+        "href": "/billets",
+        "rel": "billets"
+    }
+    ]
+    return jsonify(liens), 200
 
 
 
